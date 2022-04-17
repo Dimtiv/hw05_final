@@ -150,3 +150,6 @@ static/
 yatube/posts/static/
 yatube/media/
 
+.migrations
+/migrations
+
