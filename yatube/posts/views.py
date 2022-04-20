@@ -39,7 +39,10 @@ def profile(request, username):
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
     count = post_author.count()
-    if request.user.is_authenticated and Follow.objects.filter(author=author):
+    count_followers = Follow.objects.filter(author=author).count()
+    if request.user.is_authenticated and Follow.objects.filter(
+            user=request.user,
+            author=author):
         following = True
     else:
         following = False
@@ -48,7 +51,7 @@ def profile(request, username):
         'author': author,
         'count': count,
         'following': following,
-
+        'count_followers': count_followers
     }
     return render(request, 'posts/profile.html', context)
 
@@ -120,8 +123,6 @@ def follow_index(request):
     paginator = Paginator(post_list, LIMIT)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
-
-    # ...
     context = {
         'page_obj': page_obj,
     }

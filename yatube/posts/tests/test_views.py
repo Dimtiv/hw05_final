@@ -372,9 +372,7 @@ class FollowTest(TestCase):
         shutil.rmtree(TEMP_MEDIA_ROOT, ignore_errors=True)
 
     def test_follow_on_author(self):
-        """
-        Авторизированный пользователь добавляет/удаляет подписки на автора
-        """
+        """ Авторизированный пользователь добавляет подписки на автора """
         post_author_count = Post.objects.count()
         Follow.objects.get_or_create(
             user=self.user_follower,
@@ -390,12 +388,20 @@ class FollowTest(TestCase):
                     len(response.context['page_obj']),
                     count
                 )
+
+    def test_unfollow_on_author(self):
+        """ Авторизированный пользователь удаляет подписки на автора """
+        Follow.objects.get_or_create(
+            user=self.user_follower,
+            author=FollowTest.user)
+        post_author_count = Post.objects.count()
         Follow.objects.filter(
             user=self.user_follower,
             author=FollowTest.user).delete()
         response = self.authorized_follower.get(FollowTest.url)
         post_folower_count = len(response.context['page_obj'])
         self.assertNotEqual(post_author_count, post_folower_count)
+        self.assertEqual(post_author_count, post_folower_count + 1)
 
     def test_follow_add_post(self):
         """Отражение нового поста в ленте подписчика"""

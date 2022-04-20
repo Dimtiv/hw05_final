@@ -8,6 +8,7 @@ from django.test import Client, TestCase, override_settings
 from django.urls import reverse
 from posts.models import Group, Post
 
+
 TEMP_MEDIA_ROOT = tempfile.mkdtemp(dir=settings.BASE_DIR)
 
 User = get_user_model()
@@ -82,6 +83,16 @@ class FormTestsCase(TestCase):
                 text='Тестовая запись',
                 image='posts/small.gif',
             ).exists()
+        )
+        response = self.authorized_client.post(
+            reverse('posts:post_create'),
+            data=form_data,
+        )
+        self.assertFormError(
+            response,
+            'form',
+            'image',
+            errors='Отправленный файл пуст.'
         )
 
     def test_create_post_edit(self):
